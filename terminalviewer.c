@@ -29,6 +29,7 @@ typedef struct Vector3 {
 
 const char fullShades[] = " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
 const char abbreviatedShades[] = " .:-=+*#%@";
+const int hd = 0;
 char screen[SCREEN_WIDTH][SCREEN_HEIGHT];
 float zbuffer[SCREEN_WIDTH][SCREEN_HEIGHT];
 Vector3 light;
@@ -51,8 +52,8 @@ int main(int argc, char *argv[]) {
 	setScreen(X_BOUND,-Y_BOUND,'$');
 	setScreen(-X_BOUND,Y_BOUND,'$');
 	setScreen(X_BOUND,Y_BOUND,'$');
-	newSphere(0, 0, 50, 10);
-	newSphere(0, 0, 200, 20);
+	newSphere(30, 0, 50, 25);
+	newSphere(0, 0, 200, 100);
 	output();
 }
 
@@ -89,10 +90,11 @@ void render(Vector3 *vertex, Vector3 *normal) {
 		int xp = (int) ((K1*x)*bufferval);
 		int yp = (int) ((K1*y)*bufferval);
 		float luminance = dot(&light, normal);
-		if (luminance > 0) {
-			if (bufferval > getZbuffer(x,y)) {
+		if (luminance >= 0) {
+			if (bufferval > getZbuffer(xp,yp)) {
 				setZbuffer(xp,yp,bufferval);
-				char point = abbreviatedShades[(int) (luminance * strlen(abbreviatedShades))];
+				char point;
+				point = hd ? fullShades[(int) (luminance * strlen(fullShades))] : abbreviatedShades[(int) (luminance * strlen(abbreviatedShades))];
 				setScreen(xp,yp,point);
 			}
 		}

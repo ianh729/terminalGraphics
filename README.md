@@ -26,3 +26,4 @@ https://en.wikipedia.org/wiki/Z-buffering
 * make simple multiplication a matrix
 * make cube
 * fix depth issue
+* make a separate file for vector and matrix utilities (when I add more functions)
