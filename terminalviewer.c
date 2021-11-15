@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define X_BOUND (80) // max and min value of x and y
-#define Y_BOUND (25)
+#define Y_BOUND (24)
 #define SCREEN_WIDTH (2*X_BOUND+1)
 #define SCREEN_HEIGHT (2*Y_BOUND+1) // +1 to make pixel (0,0) symmetrical
 
@@ -41,8 +41,8 @@ float dot(Vector3 *v1, Vector3 *v2);
 float norm(Vector3 *vect);
 void normalize(Vector3 *vect);
 int inFrustum(float x, float y, float z);
-void newCircle(float x, float y, float z, float radius);
-void newCircleVertex(Vector3 center, float radius);
+void newSphere(float x, float y, float z, float radius);
+void newSphereVertex(Vector3 *center, float radius);
 
 int main(int argc, char *argv[]) {
 	light = (Vector3) {.x = 0, .y = 0, .z = 1};
@@ -51,7 +51,8 @@ int main(int argc, char *argv[]) {
 	setScreen(X_BOUND,-Y_BOUND,'$');
 	setScreen(-X_BOUND,Y_BOUND,'$');
 	setScreen(X_BOUND,Y_BOUND,'$');
-	newCircle(0, 0, 100, 90);
+	newSphere(0, 0, 50, 10);
+	newSphere(0, 0, 200, 20);
 	output();
 }
 
@@ -84,18 +85,16 @@ void render(Vector3 *vertex, Vector3 *normal) {
 	(void) normal;
 	// check if in viewing frustum
 	if (inFrustum(x,y,z)) {
-		int xp = (int) ((K1*x)/z);
-		int yp = (int) ((K1*y)/z);
 		float bufferval = 1/z;
-		if (bufferval > getZbuffer(x,y)) {
-			setZbuffer(xp,yp,bufferval);
-
-			float luminance = dot(&light, normal);
-			if (luminance > 0) {
+		int xp = (int) ((K1*x)*bufferval);
+		int yp = (int) ((K1*y)*bufferval);
+		float luminance = dot(&light, normal);
+		if (luminance > 0) {
+			if (bufferval > getZbuffer(x,y)) {
+				setZbuffer(xp,yp,bufferval);
 				char point = abbreviatedShades[(int) (luminance * strlen(abbreviatedShades))];
 				setScreen(xp,yp,point);
 			}
-			// setScreen(xp,yp,'@');
 		}
 	}
 }
@@ -120,7 +119,7 @@ int inFrustum(float x, float y, float z) {
 }
 
 // draws circle with given radius and center x, y, z coords
-void newCircle(float x, float y, float z, float radius) {
+void newSphere(float x, float y, float z, float radius) {
 	for (float phi = 0.0; phi < PI; phi+=THETASPACING) {
 		float zn = radius*cos(phi);
 		float incRadius = radius*sin(phi); // radius that gets incremented
@@ -134,8 +133,8 @@ void newCircle(float x, float y, float z, float radius) {
 	}
 }
 
-void newCircleVertex(Vector3 center, float radius) {
-	newCircle(center.x, center.y, center.z, radius);
+void newSphereVertex(Vector3 *center, float radius) {
+	newSphere(center->x, center->y, center->z, radius);
 }
 
 int inBounds(int xp, int yp) {

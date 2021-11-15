@@ -25,3 +25,4 @@ https://en.wikipedia.org/wiki/Z-buffering
 * use matrices to change position of camera
 * make simple multiplication a matrix
 * make cube
+* fix depth issue
